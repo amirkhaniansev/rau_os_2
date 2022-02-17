@@ -24,7 +24,7 @@ void* increment(void* thread_input)
     while (true) {
         usleep(500000);
         pthread_mutex_lock(&lock);
-        if (*count_ptr == 0)
+        if (*count_ptr != 0)
             pthread_cond_signal(&cond);
         size_t before = *count_ptr;
         size_t after  = ++(*count_ptr);
