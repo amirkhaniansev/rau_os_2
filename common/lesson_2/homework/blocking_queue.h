@@ -27,7 +27,7 @@ bool push(blocking_queue_t* queue, const int  item);
 // Tries to pop an item and save it into dest.
 // This function should always block if the queue is empty.
 // Returns true if there is no error, false otherwise.
-bool pop(blocking_queue_t* queue, const int* dest);
+bool pop(blocking_queue_t* queue, int* dest);
 
 // Tries to destroy the queue.
 // Returns true if there is no error, false otherwise.
