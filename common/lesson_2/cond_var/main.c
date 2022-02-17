@@ -65,8 +65,8 @@ int main(int argc, char** argv)
     pthread_cond_init(&input.cond_, NULL);
     pthread_mutex_init(&input.lock_, NULL);
 
-    pthread_t threads[4];
-    for (size_t i = 0; i < 4; i += 2) {
+    pthread_t threads[2];
+    for (size_t i = 0; i < 2; i += 2) {
         pthread_create(&threads[i],   NULL, increment, &input);
         pthread_create(&threads[i+1], NULL, decrement, &input);
     }   
