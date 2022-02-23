@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "blocking_queue.h"
 #include "pusher.h"
@@ -36,7 +37,9 @@ int main(int argc, char** argv)
     
     printf("Creating poppers...\n");
     for (size_t i = 0; i < popper_count; i++)
-        start_popper(queue, true);
+        start_popper(queue, false);
+    
+    sleep(1000);
     
     return 0;
 }
