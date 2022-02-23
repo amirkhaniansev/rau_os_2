@@ -4,6 +4,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+// This is just a simple FIFO queue implementation
+// using singly linked list.
+
+
 typedef struct node {
     int          value_;
     struct node* next_;

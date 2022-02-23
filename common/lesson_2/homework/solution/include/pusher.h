@@ -3,6 +3,7 @@
 
 #include "blocking_queue.h"
 
+// Starts pusher thread.
 void start_pusher(blocking_queue_t* queue, const bool join);
 
 #endif

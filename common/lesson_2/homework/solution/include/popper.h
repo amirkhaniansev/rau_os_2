@@ -3,6 +3,7 @@
 
 #include "blocking_queue.h"
 
+// Starts popper thread.
 void start_popper(blocking_queue_t* queue, const bool join);
 
 #endif
