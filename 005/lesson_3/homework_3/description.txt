@@ -1,0 +1,81 @@
+In scope of this homework you will need to create a multiprocess
+sum calculation by using multiple processes to calculate the overall
+sum in parallel fashion. To create a new process, you need to use
+fork() which you are familiar with from the 1st semester.
+
+pid_t fork();
+RETURNS:              -1 if and only if the operation failed
+                       0 if and only if you are in the child process 
+        Positive integer if and only if you are in the parent process.
+        This positive integer is the process ID of your child process.
+
+You will need an inter-process shareable mutex and an array for storing
+your elements. This two need to be initialized in a shared memory segment.
+After fork() call your child processes should use shm_id to attach to the
+shared memory, calculate their part of the sum and register that value.
+
+The shared memory segment will have the following structure:
+typedef struct shm {
+    pthread_mutexattr_t attr_;  
+    pthread_mutex_t     mutex_;
+    size_t              sum_;  
+    size_t              arr_[1024];                 
+} shm_t;
+
+where attr_  is the POSIX mutex attribute to make your mutex shareable
+      mutex_ is the POSIX inter-process shareable mutex
+      sum_   is the overall sum of the array elements
+      arr_   is you array. For simplicity we use fixed-size array.
+
+You will need to implement the following interfaces:
+
+1. int create_shm()
+   This function creates a new segment of shared memory, initializes
+   mutex attribute, mutex, sum and the array. For initialization of the mutex
+   you should use the example called shm_mutex which we did previously during the class.
+   You will also need to initialize sum_ to 0 and fill array elements with 1s.
+
+2. void run_child(const int shm_id, const size_t child_number, const size_t size)
+   This function executes your child process, thus it must be called when you are
+   in the child process, i.e pid == 0. 
+   shm_id is the shared memory ID which will be accessible from the parent address space
+   because that's how the fork() call works. Kernel copies your parent address space to
+   the child process upon fork() call. 
+   child_number is the consecutive child index which is provided by the parent. This is 
+   necessary for both informative purposes and determining the array segment which your
+   child process should calculate the sum for. As I have said above, we have an integer
+   buffer with size 1024. Your child will need to calcualte the sum for elements 
+   from (size * child_number) to (size * child_number + size). Here size which is the 3rd
+   argument of the function is the size for each part. For instance, if you have 4 children,
+   the size will be 1024 / 4 = 256.
+
+3. void run_parent(const int shm_id)
+   This function executes your parent process, thus it must be called when you are in 
+   the parent process, i.e pid > 0. 
+   shm_id is the shared memory ID. This function must attach to the memory and just
+   print already calculated sum. At this point this calculation had already been 
+   performed by children.
+
+4. void wait_children(const pid_t* pids, const size_t count)
+   This function is called in parent process and it essentially waits for all children
+   to exit in order to be able to call run_parent(shm_id). You do not need to give
+   the implementation of this function. It is already provided in the folder.
+
+5. void destroy_shm(const int shm_id)
+   This function destroys shared memory segment. Again, refer to the classroom example.
+
+Note that all functions which attach to the shared memory segment
+should gracefully free the resources, i.e detach from the segment. 
+Detach mechanisms can be seen in the classroom example.
+
+Build the project with cmake. Note that ipc.c should be compiled in a separate
+library as a Linux shared object. Your main executable should link your ipc library
+and pthread library as well.
+
+Here is the test of you code which is again provided by myself
+thus you need to just implement the functions described in the header file.
+No need to write a test. This test is the main.c file.
+
+Do not hesitate to ask questions in case you have one!
+Please, remember it is not shameful to ask questions! It means
+that you are willing to understand and you do your best to understand.
