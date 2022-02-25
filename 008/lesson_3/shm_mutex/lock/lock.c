@@ -12,7 +12,7 @@ sync_header_t* get_shared_mutex()
     const size_t size   = sizeof(sync_header_t);
 
     // Determing the size. For example it is year|your group number.
-    const key_t  key    = 0x2202005;
+    const key_t  key    = 0x2202008;
 
     // IPC_CREAT means to try to create or get already
     // existing shared memory. 0660 is the user permission.
@@ -45,6 +45,10 @@ sync_header_t* get_shared_mutex()
     // If the sync header is not initialize we intialize it.
     if (!header->initialized_) {
         // Initialize fields
+        pthread_mutexattr_init(&header->lock_attr_);
+        pthread_mutexattr_setpshared(&header->lock_attr_,PTHREAD_PROCESS_SHARED);
+        pthread_mutex_init(&header->lock_,&header->lock_attr_);
+        header->initialized_=true;
     }
 
     // Returning header
@@ -58,7 +62,14 @@ void enter_critical_section(sync_header_t* header)
         return;
     }
 
-    // Enter crticial section, print, sleep and leave critical section.
+    if(pthread_mutex_lock(&header->lock_)!=0){
+        return;
+    }
+
+    sleep(10);
+    printf("%s\n","pthread locked");
+    
+    pthread_mutex_unlock(&header->lock_);
 }
 
 void cleanup(sync_header_t* header, bool destroy)
