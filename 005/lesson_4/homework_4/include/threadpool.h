@@ -69,6 +69,11 @@ namespace RauOs {
             // This method cancels the execution of threadpool threads.
             // The destructor may call this function.
             void exit();
+        private:
+            pthread_mutex_t     lock_;
+            pthread_cond_t      canBeExecuted_;
+            std::vector<Worker> workers_;
+            std::queue<Work>    works_;
     };
 };
 
