@@ -39,9 +39,9 @@ void* execute_thread(void* input)
             pthread_cond_wait(&executed, &mutex_);
         }
         execution_context context = works.front();
-        works.pop();
-        pthread_mutex_unlock(&mutex_);
+        works.pop();        
         context.work(context.input);
+        pthread_mutex_unlock(&mutex_);
     }
     return nullptr;
 }
@@ -91,10 +91,15 @@ int main(int argc, char** argv)
     register_work(make_context(sum, (void*)(&sum_input)));
     register_work(make_context(sum, (void*)(&sum_input)));
 
-    pthread_join(thread, NULL);
-
-    pthread_mutex_destroy(&mutex_);
+    char* message = "bye";
+    register_work(make_context(pthread_exit, (void*)message));
+ 
+    void* return_value;
+    pthread_join(thread, &return_value);
+    std::cout << "Exited with " << (char*)return_value << std::endl;
+    
     pthread_cond_destroy(&executed);
+    pthread_mutex_destroy(&mutex_);
 
     return 0;
 }
