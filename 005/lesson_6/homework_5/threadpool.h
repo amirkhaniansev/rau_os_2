@@ -65,21 +65,18 @@ namespace RauOs {
 
             // This method waits for all your threads for the specified time.
             void wait(const std::size_t milliseconds);
-
-            // This method cancels the execution of threadpool threads.
-            // The destructor may call this function.
-            void exit();
         protected:
+            static void* executeThread(void* input);
             void increaseParallelism();
             void decreaseParallelism();
-            static Output executeThread(Input input);
         private:
             pthread_mutex_t     lock_;
             pthread_cond_t      canBeExecuted_;
             std::vector<Worker> workers_;
             std::queue<Work>    works_;
             std::queue<Input>   inputs_;
-            std::size_t         minParallelismDegree_;
+            size_t              minParallelismDegree_;
+            size_t              currentParallelismDegree_;
     };
 };
 
